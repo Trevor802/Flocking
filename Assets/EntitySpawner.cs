@@ -35,11 +35,7 @@ public class EntitySpawner : MonoBehaviour
 		m_manager.SetComponentData(entity, new Translation{
 			Value = pos
 		});
-		quaternion q = m_rand.NextQuaternionRotation();
-		m_manager.SetComponentData(entity, new Rotation{
-			Value = q
-		});
-		float3 dir = math.mul(q, new float3(0, 1, 0));
+		float3 dir = m_rand.NextFloat3Direction();
 		m_manager.SetComponentData(entity, new MoveDirection{
 			Direction = dir,
 			Speed = m_speed
