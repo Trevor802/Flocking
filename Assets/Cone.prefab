@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6454810224145810472}
   - component: {fileID: 6454810224145810473}
   - component: {fileID: 6454810224145810474}
-  - component: {fileID: 1538290195723351005}
+  - component: {fileID: 4238093522561987360}
   m_Layer: 0
   m_Name: Cone
   m_TagString: Untagged
@@ -80,7 +80,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1538290195723351005
+--- !u!114 &4238093522561987360
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,8 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57f8461f23b348a681cb5d92b9df444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Direction:
+  Value:
     x: 0
     y: 0
     z: 0
-  Speed: 5

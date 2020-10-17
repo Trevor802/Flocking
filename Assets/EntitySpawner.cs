@@ -8,24 +8,24 @@ using Random = Unity.Mathematics.Random;
 public class EntitySpawner : MonoBehaviour
 {
 	[SerializeField] private GameObject m_prefab;
-	[SerializeField] private int m_count = 10;
-	[SerializeField] private float m_speed = 5f;
+	[SerializeField] private uint m_count = 10;
+	public uint Seed;
 	private Entity m_entityPrefab;
 	private EntityManager m_manager;
 	private Random m_rand;
 	void Start()
 	{
 		m_rand = new Random();
-		m_rand.InitState();
+		m_rand.InitState(Seed);
 		m_manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 		var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
 	}
 
-	private void CreateRandomAgents(int count){
+	private void CreateRandomAgents(uint count){
 		while(count-- > 0){
-			float3 position = m_rand.NextFloat3(-5f, 5f);
+			float3 position = m_rand.NextFloat3(-DEF.SPN_RADIUS, DEF.SPN_RADIUS);
 			CreateEntity(position);
 		}
 	}
@@ -37,8 +37,7 @@ public class EntitySpawner : MonoBehaviour
 		});
 		float3 dir = m_rand.NextFloat3Direction();
 		m_manager.SetComponentData(entity, new MoveDirection{
-			Direction = dir,
-			Speed = m_speed
+			Value = dir,
 		});
 	}
 

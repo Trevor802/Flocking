@@ -2,6 +2,5 @@
 using Unity.Mathematics;
 [GenerateAuthoringComponent]
 public struct MoveDirection : IComponentData{
-    public float3 Direction;
-    public float Speed;
+    public float3 Value;
 }
