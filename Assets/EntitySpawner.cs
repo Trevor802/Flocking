@@ -11,7 +11,9 @@ public class EntitySpawner : MonoBehaviour
 	[SerializeField] private uint m_count = 10;
 	public uint Seed;
 	private Entity m_entityPrefab;
+    public float SPN_RADIUS = 10f;
 	private EntityManager m_manager;
+	public GameObject Volume;
 	private Random m_rand;
 	void Start()
 	{
@@ -21,11 +23,12 @@ public class EntitySpawner : MonoBehaviour
 		var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
+		Volume.transform.localScale = Vector3.one * SPN_RADIUS;
 	}
 
 	private void CreateRandomAgents(uint count){
 		while(count-- > 0){
-			float3 position = m_rand.NextFloat3(-DEF.SPN_RADIUS, DEF.SPN_RADIUS);
+			float3 position = m_rand.NextFloat3(-SPN_RADIUS, SPN_RADIUS);
 			CreateEntity(position);
 		}
 	}

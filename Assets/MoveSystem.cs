@@ -18,13 +18,13 @@ public class MoveSystem : ComponentSystem{
             Entities.ForEach((ref Translation t, ref MoveDirection d) => {
                 float3 dist = pos - t.Value;
                 float distSqr = math.mul(dist, dist);
-                if (distSqr < DEF.VIEW_RADIUS_SQR && math.abs(distSqr) > DEF.EPS){
+                if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && math.abs(distSqr) > DEF.EPS){
                     count++;
                     coh += t.Value;
                     ali += d.Value;
-                    if (distSqr < DEF.AVO_RADIUS_SQR){
+                    if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
                         avoCount++;
-                        avo += math.normalize(dist) * math.pow(DEF.AVO_RADIUS_SQR - distSqr, 1);
+                        avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
                     }
                 } 
             });
@@ -35,18 +35,19 @@ public class MoveSystem : ComponentSystem{
             if (avoCount > 0){
                 avo /= avoCount;
             }
+            coh -= trans.Value;
             float rSqr = math.mul(pos, pos);
-            float p = rSqr / DEF.STY_RADIUS_SQR;
+            float p = rSqr / (DEF.Instance.STY_RADIUS * DEF.Instance.STY_RADIUS);
             if (p > 0.9f)
-                sty = -math.normalizesafe(pos) * p * p;
+                sty = -math.normalizesafe(pos) * p;
             // Clamp
-            coh = coh.Clamp(DEF.COH_WGT, DEF.COH_WGT_SQR);
-            ali = ali.Clamp(DEF.ALI_WGT, DEF.ALI_WGT_SQR);
-            avo = avo.Clamp(DEF.AVO_WGT, DEF.AVO_WGT_SQR);
-            sty = sty.Clamp(DEF.STY_WGT, DEF.STY_WGT_SQR);
+            coh = coh.Clamp(DEF.Instance.COH_WGT);
+            ali = ali.Clamp(DEF.Instance.ALI_WGT);
+            avo = avo.Clamp(DEF.Instance.AVO_WGT);
+            sty = sty.Clamp(DEF.Instance.STY_WGT);
             // Accumulate
-            float3 all = direction.Value * DEF.DAMP + coh + ali + avo + sty;
-            // all = all.Clamp(DEF.MAX_SPEED, DEF.MAX_SPEED_SQR);
+            float3 all = direction.Value * DEF.Instance.DAMP + coh + ali + avo + sty;
+            all = all.Clamp(DEF.Instance.SPD_LMT.x, DEF.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);
             // Look towards
@@ -55,7 +56,7 @@ public class MoveSystem : ComponentSystem{
             float3 up = math.normalizesafe(math.cross(fwd, rt));
             rotation.Value = quaternion.LookRotation(fwd, up);
             // Execute movement
-            trans.Value += direction.Value * DEF.MAX_SPEED * Time.DeltaTime;
+            trans.Value += all * Time.DeltaTime;
         });
     }
 
@@ -109,8 +110,18 @@ public class MoveSystem : ComponentSystem{
 }
 
 public static class MathExtension{
-    public static float3 Clamp(this float3 value, float maxValue, float maxValueSqr){
-        if (math.mul(value, value) > maxValueSqr){
+    public static float3 Clamp(this float3 value, float maxValue){
+        if (math.mul(value, value) > maxValue * maxValue){
+            return math.normalize(value) * maxValue;
+        }
+        return value;
+    }
+    public static float3 Clamp(this float3 value, float minValue, float maxValue){
+        var length = math.mul(value, value);
+        if (length < minValue * minValue){
+            return math.normalize(value) * minValue;
+        }
+        if (length > maxValue * maxValue){
             return math.normalize(value) * maxValue;
         }
         return value;
