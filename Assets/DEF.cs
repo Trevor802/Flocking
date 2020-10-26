@@ -5,6 +5,7 @@ public class DEF : MonoBehaviour{
         Instance = this;
     }
     public float VIEW_RADIUS_SQR = 100f;
+    public float VIEW_HALF_AGL = 30f;
     public float AVO_RADIUS = 2f;
     public float AVO_RADIUS_SQR => AVO_RADIUS * AVO_RADIUS;
     public float STY_RADIUS = 20f;

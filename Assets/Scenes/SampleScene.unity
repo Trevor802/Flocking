@@ -406,7 +406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_prefab: {fileID: 6454810224145810475, guid: d4ba0028e5bf4495bb5afc6bf55b27bd,
     type: 3}
-  m_count: 50
+  m_count: 20
   Seed: 43553
   SPN_RADIUS: 20
   Volume: {fileID: 1116838634}

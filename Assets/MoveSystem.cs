@@ -9,16 +9,19 @@ public class MoveSystem : ComponentSystem{
         Entities.ForEach((ref Translation trans, ref MoveDirection direction, ref Rotation rotation) => {
             // Calculate direction
             float3 pos = trans.Value;
+            float3 dir = direction.Value;
             float3 coh = float3.zero;
             float3 ali = float3.zero;
             float3 avo = float3.zero;
             float3 sty = float3.zero;
             uint count = 0;
             uint avoCount = 0;
+            // In terms of a single agent
             Entities.ForEach((ref Translation t, ref MoveDirection d) => {
                 float3 dist = pos - t.Value;
                 float distSqr = math.mul(dist, dist);
-                if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && math.abs(distSqr) > DEF.EPS){
+                float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
+                if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
                     count++;
                     coh += t.Value;
                     ali += d.Value;
@@ -58,54 +61,6 @@ public class MoveSystem : ComponentSystem{
             // Execute movement
             trans.Value += all * Time.DeltaTime;
         });
-    }
-
-    private float3 GetCohesion(float3 pos, float radiusSqr){
-        float3 result = float3.zero;
-        uint count = 0;
-        Entities.ForEach((ref Translation trans) => {
-            float3 dist = pos - trans.Value;
-            float distSqr = math.mul(dist, dist);
-            if (distSqr < radiusSqr && math.abs(distSqr) > DEF.EPS){
-                count++;
-                result += trans.Value;
-            }
-        });
-        if (count > 0)
-            result /= count;
-        return result;
-    }
-
-    private float3 GetAlignment(float3 pos, float radiusSqr){
-        float3 result = float3.zero;
-        uint count = 0;
-        Entities.ForEach((ref Translation trans, ref MoveDirection direction) => {
-            float3 dist = pos - trans.Value;
-            float distSqr = math.mul(dist, dist);
-            if (distSqr < radiusSqr && math.abs(distSqr) > DEF.EPS){
-                count++;
-                result += direction.Value;
-            }
-        });
-        if (count > 0)
-            result /= count;
-        return result;
-    }
-
-    private float3 GetAvoidance(float3 pos, float radiusSqr){
-        float3 result = float3.zero;
-        uint count = 0;
-        Entities.ForEach((ref Translation trans) => {
-            float3 dist = pos - trans.Value;
-            float distSqr = math.mul(dist, dist);
-            if (distSqr < radiusSqr && math.abs(distSqr) > DEF.EPS){
-                count++;
-                result += dist;
-            }
-        });
-        if (count > 0)
-            result /= count;
-        return result;
     }
 }
 
