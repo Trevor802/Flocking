@@ -1,6 +1,10 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Physics;
+using Unity.Physics.Systems;
+using UnityEngine;
+using RaycastHit = Unity.Physics.RaycastHit;
 
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
@@ -14,8 +18,33 @@ public class MoveSystem : ComponentSystem{
             float3 ali = float3.zero;
             float3 avo = float3.zero;
             float3 sty = float3.zero;
+            float3 col = float3.zero;
             uint count = 0;
             uint avoCount = 0;
+            // Collision detection
+            foreach(var f in BoidHelper.G_S_Dirs){
+                float3 d = math.mul(rotation.Value, f);
+                Debug.DrawLine(pos.ToVector3(), pos.ToVector3() + d.ToVector3() * DEF.Instance.COL_DET_RAD, Color.red);
+                var pWorld = World.DefaultGameObjectInjectionWorld.GetExistingSystem<BuildPhysicsWorld>();
+                var cWorld = pWorld.PhysicsWorld.CollisionWorld;
+                var raycast = new RaycastInput{
+                    Start = pos,
+                    End = pos + d * DEF.Instance.COL_DET_RAD,
+                    Filter = new CollisionFilter{
+                        BelongsTo = ~0u,
+                        CollidesWith = 1 << 8, // Only detect layer 8
+                        GroupIndex = 0,
+                    }
+                };
+                RaycastHit hit;
+                if (cWorld.CastRay(raycast, out hit)){ // Detected collision in this direction
+                    // var e = pWorld.PhysicsWorld.Bodies[hit.RigidBodyIndex].Entity;
+                }
+                else{ // Found a way out
+                    col = d;
+                    break; // early quit, that's indispensable
+                }
+            }
             // In terms of a single agent
             Entities.ForEach((ref Translation t, ref MoveDirection d) => {
                 float3 dist = pos - t.Value;
@@ -29,7 +58,7 @@ public class MoveSystem : ComponentSystem{
                         avoCount++;
                         avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
                     }
-                } 
+                }
             });
             if (count > 0){
                 coh /= count;
@@ -49,7 +78,7 @@ public class MoveSystem : ComponentSystem{
             avo = avo.Clamp(DEF.Instance.AVO_WGT);
             sty = sty.Clamp(DEF.Instance.STY_WGT);
             // Accumulate
-            float3 all = direction.Value * DEF.Instance.DAMP + coh + ali + avo + sty;
+            float3 all = direction.Value * DEF.Instance.DAMP + coh + ali + avo + sty + col * DEF.Instance.COL_WGT;
             all = all.Clamp(DEF.Instance.SPD_LMT.x, DEF.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);
@@ -80,5 +109,29 @@ public static class MathExtension{
             return math.normalize(value) * maxValue;
         }
         return value;
+    }
+
+    public static Vector3 ToVector3(this float3 value){
+        return new Vector3(value.x, value.y, value.z);
+    }
+
+}
+
+public static class BoidHelper{
+    private const int NUM_DIR = 20;
+    public static readonly float3[] G_S_Dirs;
+    static BoidHelper(){
+        G_S_Dirs = new float3[NUM_DIR];
+        float goldenRatio = (1 + math.sqrt(5)) / 2;
+        float _1 = 1f / NUM_DIR * 2f;
+        float angleInc = math.PI * 2 * goldenRatio;
+        for(int i = 0; i < NUM_DIR; i++){
+            float pitch = math.acos(1 - i * _1);
+            float roll = angleInc * i;
+            float x = math.sin(pitch) * math.cos(roll);
+            float y = math.sin(pitch) * math.sin(roll);
+            float z = math.cos(pitch);
+            G_S_Dirs[i] = new float3(x, y, z);
+        }
     }
 }

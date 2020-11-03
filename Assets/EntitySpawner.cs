@@ -20,7 +20,10 @@ public class EntitySpawner : MonoBehaviour
 		m_rand = new Random();
 		m_rand.InitState(Seed);
 		m_manager = World.DefaultGameObjectInjectionWorld.EntityManager;
-		var settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, null);
+		GameObjectConversionSettings settings = null;
+		using (var store = new BlobAssetStore()){
+			settings = GameObjectConversionSettings.FromWorld(World.DefaultGameObjectInjectionWorld, store);
+		}
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
 		Volume.transform.localScale = Vector3.one * SPN_RADIUS;

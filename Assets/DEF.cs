@@ -16,5 +16,7 @@ public class DEF : MonoBehaviour{
     public float ALI_WGT = 2f;
     public float AVO_WGT = 2f;
     public float STY_WGT = 4f;
+    public float COL_WGT = 10f;
     public float DAMP = 2f;
+    public float COL_DET_RAD = 2f;
 }
