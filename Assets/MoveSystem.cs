@@ -9,6 +9,11 @@ using RaycastHit = Unity.Physics.RaycastHit;
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
     {
+        var pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, 1f);
+        Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
+            pointTree.Add((trans.Value, dir.Value), trans.Value.ToVector3());
+        });
+        EntitySpawner.Instance.Tree = pointTree;
         // Conduct moving & rotating
         Entities.ForEach((ref Translation trans, ref MoveDirection direction, ref Rotation rotation) => {
             // Calculate direction
@@ -45,21 +50,36 @@ public class MoveSystem : ComponentSystem{
                     break; // early quit, that's indispensable
                 }
             }
-            // In terms of a single agent
-            Entities.ForEach((ref Translation t, ref MoveDirection d) => {
-                float3 dist = pos - t.Value;
+            var nodes = pointTree.GetNearby(pos.ToVector3(), DEF.Instance.VIEW_RADIUS);
+            foreach(var n in nodes){
+                float3 dist = pos - n.Item1;
                 float distSqr = math.mul(dist, dist);
                 float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
                 if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
                     count++;
-                    coh += t.Value;
-                    ali += d.Value;
+                    coh += n.Item1;
+                    ali += n.Item2;
                     if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
                         avoCount++;
                         avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
                     }
                 }
-            });
+            }
+            // In terms of a single agent
+            // Entities.ForEach((ref Translation t, ref MoveDirection d) => {
+            //     float3 dist = pos - t.Value;
+            //     float distSqr = math.mul(dist, dist);
+            //     float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
+            //     if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
+            //         count++;
+            //         coh += t.Value;
+            //         ali += d.Value;
+            //         if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
+            //             avoCount++;
+            //             avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+            //         }
+            //     }
+            // });
             if (count > 0){
                 coh /= count;
                 ali /= count;

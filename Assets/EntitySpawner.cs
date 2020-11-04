@@ -9,12 +9,17 @@ public class EntitySpawner : MonoBehaviour
 {
 	[SerializeField] private GameObject m_prefab;
 	[SerializeField] private uint m_count = 10;
+	public static EntitySpawner Instance { private set; get;}
 	public uint Seed;
 	private Entity m_entityPrefab;
     public float SPN_RADIUS = 10f;
 	private EntityManager m_manager;
 	public GameObject Volume;
 	private Random m_rand;
+	public PointOctree<(float3, float3)> Tree {set; get;}
+	private void Awake() {
+		Instance = this;
+	}
 	void Start()
 	{
 		m_rand = new Random();
@@ -26,7 +31,7 @@ public class EntitySpawner : MonoBehaviour
 		}
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
-		Volume.transform.localScale = Vector3.one * SPN_RADIUS;
+		Volume.transform.localScale = Vector3.one * SPN_RADIUS * 2; // radius
 	}
 
 	private void CreateRandomAgents(uint count){
@@ -47,4 +52,9 @@ public class EntitySpawner : MonoBehaviour
 		});
 	}
 
+	private void OnDrawGizmos() {
+		if (Tree != null){
+			Tree.DrawAllBounds();
+		}
+	}
 }

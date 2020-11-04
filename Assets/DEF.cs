@@ -4,7 +4,8 @@ public class DEF : MonoBehaviour{
     private void Awake() {
         Instance = this;
     }
-    public float VIEW_RADIUS_SQR = 100f;
+    public float VIEW_RADIUS = 10f;
+    public float VIEW_RADIUS_SQR => VIEW_RADIUS * VIEW_RADIUS;
     public float VIEW_HALF_AGL = 30f;
     public float AVO_RADIUS = 2f;
     public float AVO_RADIUS_SQR => AVO_RADIUS * AVO_RADIUS;
@@ -19,4 +20,5 @@ public class DEF : MonoBehaviour{
     public float COL_WGT = 10f;
     public float DAMP = 2f;
     public float COL_DET_RAD = 2f;
+    public float OCT_LTH = 10f;
 }
