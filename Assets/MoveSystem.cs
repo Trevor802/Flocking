@@ -5,6 +5,7 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
+using Unity.Rendering;
 
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
@@ -99,8 +100,9 @@ public class MoveSystem : ComponentSystem{
             ali = ali.Clamp(DEF.Instance.ALI_WGT);
             avo = avo.Clamp(DEF.Instance.AVO_WGT);
             sty = sty.Clamp(DEF.Instance.STY_WGT);
+            col = col.Clamp(DEF.Instance.COL_WGT);
             // Accumulate
-            float3 all = direction.Value * DEF.Instance.DAMP + coh + ali + avo + sty + col * DEF.Instance.COL_WGT;
+            float3 all = direction.Value * DEF.Instance.DAMP_WGT + coh + ali + avo + sty + col;
             all = all.Clamp(DEF.Instance.SPD_LMT.x, DEF.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);

@@ -18,7 +18,7 @@ public class DEF : MonoBehaviour{
     public float AVO_WGT = 2f;
     public float STY_WGT = 4f;
     public float COL_WGT = 10f;
-    public float DAMP = 2f;
+    public float DAMP_WGT = 2f;
     public float COL_DET_RAD = 2f;
     public float OCT_LTH = 10f;
     public float MIN_OCT_NODE = 1f;

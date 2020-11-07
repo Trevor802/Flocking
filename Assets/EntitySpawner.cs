@@ -12,7 +12,6 @@ public class EntitySpawner : MonoBehaviour
 	public static EntitySpawner Instance { private set; get;}
 	public uint Seed;
 	private Entity m_entityPrefab;
-    public float SPN_RADIUS = 10f;
 	private EntityManager m_manager;
 	public GameObject Volume;
 	private Random m_rand;
@@ -31,12 +30,12 @@ public class EntitySpawner : MonoBehaviour
 		}
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
-		Volume.transform.localScale = Vector3.one * SPN_RADIUS * 2; // radius
+		Volume.transform.localScale = Vector3.one * DEF.Instance.STY_RADIUS * 2; // radius
 	}
 
 	private void CreateRandomAgents(uint count){
 		while(count-- > 0){
-			float3 position = m_rand.NextFloat3(-SPN_RADIUS, SPN_RADIUS);
+			float3 position = m_rand.NextFloat3(-DEF.Instance.STY_RADIUS, DEF.Instance.STY_RADIUS);
 			CreateEntity(position);
 		}
 	}
