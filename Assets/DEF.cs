@@ -21,4 +21,6 @@ public class DEF : MonoBehaviour{
     public float DAMP = 2f;
     public float COL_DET_RAD = 2f;
     public float OCT_LTH = 10f;
+    public float MIN_OCT_NODE = 1f;
+    public bool DEBUG = false;
 }

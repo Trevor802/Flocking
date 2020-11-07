@@ -9,7 +9,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
     {
-        var pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, 1f);
+        var pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, DEF.Instance.MIN_OCT_NODE);
         Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
             pointTree.Add((trans.Value, dir.Value), trans.Value.ToVector3());
         });
@@ -29,7 +29,9 @@ public class MoveSystem : ComponentSystem{
             // Collision detection
             foreach(var f in BoidHelper.G_S_Dirs){
                 float3 d = math.mul(rotation.Value, f);
-                Debug.DrawLine(pos.ToVector3(), pos.ToVector3() + d.ToVector3() * DEF.Instance.COL_DET_RAD, Color.red);
+                if (DEF.Instance.DEBUG){
+                    Debug.DrawLine(pos.ToVector3(), pos.ToVector3() + d.ToVector3() * DEF.Instance.COL_DET_RAD, Color.red);
+                }
                 var pWorld = World.DefaultGameObjectInjectionWorld.GetExistingSystem<BuildPhysicsWorld>();
                 var cWorld = pWorld.PhysicsWorld.CollisionWorld;
                 var raycast = new RaycastInput{

@@ -53,7 +53,7 @@ public class EntitySpawner : MonoBehaviour
 	}
 
 	private void OnDrawGizmos() {
-		if (Tree != null){
+		if (Tree != null && DEF.Instance.DEBUG){
 			Tree.DrawAllBounds();
 		}
 	}
