@@ -5,16 +5,18 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
-using Unity.Rendering;
 
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
     {
-        var pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, DEF.Instance.MIN_OCT_NODE);
-        Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
+        PointOctree<(float3, float3)> pointTree = null;
+        if (DEF.Instance.OCTREE){
+            pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, DEF.Instance.MIN_OCT_NODE);
+            Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
             pointTree.Add((trans.Value, dir.Value), trans.Value.ToVector3());
-        });
-        EntitySpawner.Instance.Tree = pointTree;
+            EntitySpawner.Instance.Tree = pointTree;
+            });
+        }
         // Conduct moving & rotating
         Entities.ForEach((ref Translation trans, ref MoveDirection direction, ref Rotation rotation) => {
             // Calculate direction
@@ -27,7 +29,7 @@ public class MoveSystem : ComponentSystem{
             float3 col = float3.zero;
             uint count = 0;
             uint avoCount = 0;
-            // Collision detection
+            // Golden spiral collision detection
             foreach(var f in BoidHelper.G_S_Dirs){
                 float3 d = math.mul(rotation.Value, f);
                 if (DEF.Instance.DEBUG){
@@ -53,36 +55,40 @@ public class MoveSystem : ComponentSystem{
                     break; // early quit, that's indispensable
                 }
             }
-            var nodes = pointTree.GetNearby(pos.ToVector3(), DEF.Instance.VIEW_RADIUS);
-            foreach(var n in nodes){
-                float3 dist = pos - n.Item1;
-                float distSqr = math.mul(dist, dist);
-                float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
-                if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
-                    count++;
-                    coh += n.Item1;
-                    ali += n.Item2;
-                    if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
-                        avoCount++;
-                        avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+            if (DEF.Instance.OCTREE){
+                var nodes = pointTree.GetNearby(pos.ToVector3(), DEF.Instance.VIEW_RADIUS);
+                foreach(var n in nodes){
+                    float3 dist = pos - n.Item1;
+                    float distSqr = math.mul(dist, dist);
+                    float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
+                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
+                        count++;
+                        coh += n.Item1;
+                        ali += n.Item2;
+                        if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
+                            avoCount++;
+                            avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+                        }
                     }
                 }
             }
+            else{
             // In terms of a single agent
-            // Entities.ForEach((ref Translation t, ref MoveDirection d) => {
-            //     float3 dist = pos - t.Value;
-            //     float distSqr = math.mul(dist, dist);
-            //     float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
-            //     if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
-            //         count++;
-            //         coh += t.Value;
-            //         ali += d.Value;
-            //         if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
-            //             avoCount++;
-            //             avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
-            //         }
-            //     }
-            // });
+                Entities.ForEach((ref Translation t, ref MoveDirection d) => {
+                    float3 dist = pos - t.Value;
+                    float distSqr = math.mul(dist, dist);
+                    float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
+                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
+                        count++;
+                        coh += t.Value;
+                        ali += d.Value;
+                        if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
+                            avoCount++;
+                            avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+                        }
+                    }
+                });
+            }
             if (count > 0){
                 coh /= count;
                 ali /= count;
