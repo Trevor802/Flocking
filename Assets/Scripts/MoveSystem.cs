@@ -27,6 +27,7 @@ public class MoveSystem : ComponentSystem{
             float3 avo = float3.zero;
             float3 sty = float3.zero;
             float3 col = float3.zero;
+            float3 rad = EntitySpawner.Instance.Rand.NextFloat3Direction();
             uint count = 0;
             uint avoCount = 0;
             // Golden spiral collision detection
@@ -60,8 +61,9 @@ public class MoveSystem : ComponentSystem{
                 foreach(var n in nodes){
                     float3 dist = pos - n.Item1;
                     float distSqr = math.mul(dist, dist);
-                    float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
-                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
+                    float halfAngle = math.acos(math.mul(dir, -dist) / math.sqrt(distSqr));
+                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && 
+                        halfAngle < DEF.Instance.VIEW_HALF_AGL_DEG * DEF.D2R){
                         count++;
                         coh += n.Item1;
                         ali += n.Item2;
@@ -78,7 +80,7 @@ public class MoveSystem : ComponentSystem{
                     float3 dist = pos - t.Value;
                     float distSqr = math.mul(dist, dist);
                     float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
-                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL){
+                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL_DEG){
                         count++;
                         coh += t.Value;
                         ali += d.Value;
@@ -96,19 +98,17 @@ public class MoveSystem : ComponentSystem{
             if (avoCount > 0){
                 avo /= avoCount;
             }
-            coh -= trans.Value;
             float rSqr = math.mul(pos, pos);
             float p = rSqr / (DEF.Instance.STY_RADIUS * DEF.Instance.STY_RADIUS);
-            if (p > 0.9f)
-                sty = -math.normalizesafe(pos) * p;
+            if (p > DEF.Instance.STY_SRT_RIT * DEF.Instance.STY_SRT_RIT)
+                sty = -math.normalizesafe(pos) * p * DEF.Instance.STY_WGT;
             // Clamp
             coh = coh.Clamp(DEF.Instance.COH_WGT);
             ali = ali.Clamp(DEF.Instance.ALI_WGT);
             avo = avo.Clamp(DEF.Instance.AVO_WGT);
-            sty = sty.Clamp(DEF.Instance.STY_WGT);
-            col = col.Clamp(DEF.Instance.COL_WGT);
+            col *= DEF.Instance.COL_WGT;
             // Accumulate
-            float3 all = direction.Value * DEF.Instance.DAMP_WGT + coh + ali + avo + sty + col;
+            float3 all = dir * DEF.Instance.DAMP_WGT + coh + ali + avo + sty + col + rad * DEF.Instance.RandomWeight;
             all = all.Clamp(DEF.Instance.SPD_LMT.x, DEF.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);
@@ -124,6 +124,11 @@ public class MoveSystem : ComponentSystem{
 }
 
 public static class MathExtension{
+    public static float3 GetUp(float3 forward){
+        float3 right = new float3(forward.z, 0, -forward.x);
+        float3 up = math.normalizesafe(math.cross(forward, right));
+        return up;
+    }
     public static float3 Clamp(this float3 value, float maxValue){
         if (math.mul(value, value) > maxValue * maxValue){
             return math.normalize(value) * maxValue;

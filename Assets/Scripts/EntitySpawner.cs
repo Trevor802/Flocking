@@ -14,6 +14,7 @@ public class EntitySpawner : MonoBehaviour
 	private Entity m_entityPrefab;
 	private EntityManager m_manager;
 	public GameObject Volume;
+	public Random Rand => m_rand;
 	private Random m_rand;
 	public PointOctree<(float3, float3)> Tree {set; get;}
 	private void Awake() {
@@ -48,6 +49,9 @@ public class EntitySpawner : MonoBehaviour
 		float3 dir = m_rand.NextFloat3Direction();
 		m_manager.SetComponentData(entity, new MoveDirection{
 			Value = dir,
+		});
+		m_manager.SetComponentData(entity, new Rotation{
+			Value = quaternion.LookRotation(dir, MathExtension.GetUp(dir))
 		});
 	}
 
