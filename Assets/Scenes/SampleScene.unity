@@ -639,7 +639,7 @@ GameObject:
   - component: {fileID: 1116838635}
   - component: {fileID: 1116838637}
   m_Layer: 0
-  m_Name: SpawnerManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -688,18 +688,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 934f8c36c126545bc8f441038c3e25f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VIEW_RADIUS: 5
-  VIEW_HALF_AGL: 20
-  AVO_RADIUS: 3
-  STY_RADIUS: 50
-  SPD_LMT: {x: 7.07, y: 10}
-  COH_WGT: 2
-  ALI_WGT: 2
-  AVO_WGT: 5
-  STY_WGT: 2
-  COL_WGT: 10
-  DAMP_WGT: 2
-  COL_DET_RAD: 8
+  UseSetting: 1
+  m_setting: {fileID: 11400000, guid: 220c04c76ba7a438598cd0404a90e538, type: 2}
+  ViewRadius: 10
+  ViewHalfAngle: 30
+  AvoidanceRadius: 5
+  StayRadius: 50
+  CollisionDetectionRadius: 2
+  SpeedLimit: {x: 5, y: 10}
+  CohesionWeight: 3
+  AlignmentWeight: 2
+  AvoidanceWeight: 2
+  StayWeight: 4
+  CollisionWeight: 10
+  DampingWeight: 2
   OCT_LTH: 10
   MIN_OCT_NODE: 1
   DEBUG: 0
