@@ -19,11 +19,11 @@ public class EntitySpawner : MonoBehaviour
 	public PointOctree<(float3, float3)> Tree {set; get;}
 	private void Awake() {
 		Instance = this;
+		m_rand = new Random();
+		m_rand.InitState(Seed);
 	}
 	void Start()
 	{
-		m_rand = new Random();
-		m_rand.InitState(Seed);
 		m_manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 		GameObjectConversionSettings settings = null;
 		using (var store = new BlobAssetStore()){

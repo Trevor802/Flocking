@@ -8,7 +8,7 @@ public class FlockingSetting : ScriptableObject
     [Header("Agent Settings")]
     [Tooltip("Agent view radius")] public float VIEW_RADIUS = 10f;
     [Tooltip("Agent view half angle")] public float VIEW_HALF_AGL = 30f;
-    [Tooltip("Agent avoidance radius")] public float AVO_RADIUS = 2f;
+    [Tooltip("Agent avoidance radius")] [Range(2f, 10f)] public float AVO_RADIUS = 2f;
     [Tooltip("Agent stay radius")] public float STY_RADIUS = 20f;
     [Tooltip("Agent stay start raito")] [Range(0.1f, 1f)] public float StayStartRatio = 0.9f;
     [Tooltip("Agent collision detection radius")] public float COL_DET_RAD = 2f;

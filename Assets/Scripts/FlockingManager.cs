@@ -35,7 +35,7 @@ public class FlockingManager : MonoBehaviour{
     [Header("Agent Settings")]
     [Tooltip("Agent view radius")] public float ViewRadius = 10f;
     [Tooltip("Agent view half angle")] public float ViewHalfAngle = 30f;
-    [Tooltip("Agent avoidance radius")] public float AvoidanceRadius = 5f;
+    [Tooltip("Agent avoidance radius")] [Range(2f, 10f)] public float AvoidanceRadius = 5f;
     [Tooltip("Agent stay radius")] public float StayRadius = 50f;
     [Tooltip("Agent stay start raito")] [Range(0.1f, 1f)] public float StayStartRatio = 0.9f;
     [Tooltip("Agent collision detection radius")] public float CollisionDetectionRadius = 2f;
@@ -53,6 +53,6 @@ public class FlockingManager : MonoBehaviour{
     [Tooltip("if use octree to calculate agents nearby")] public bool OCTREE = false;
     [Header("Other Settings")]
     [MinMaxSlider(3, 20)] public Vector2 SpeedLimit;
-    [Range(0f, 0.5f)] public float RandomWeight = 0.5f;
+    [Range(0f, 1f)] public float RandomWeight = 0.5f;
     [Tooltip("Agent damping weight")] [Range(0.1f, 10f)] public float DampingWeight = 2f;
 }

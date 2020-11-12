@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a39c1f78f01d48e7b5a7a1c90386021, type: 3}
-  m_Name: LawfulSwarm
+  m_Name: ChaoticSwarm
   m_EditorClassIdentifier: 
   VIEW_RADIUS: 8
-  VIEW_HALF_AGL: 160
-  AVO_RADIUS: 4
+  VIEW_HALF_AGL: 90
+  AVO_RADIUS: 2
   STY_RADIUS: 50
-  StayStartRatio: 0.2
+  StayStartRatio: 0.9
   COL_DET_RAD: 5
-  COH_WGT: 2.64
-  ALI_WGT: 1.45
-  AVO_WGT: 0.45
+  COH_WGT: 4
+  ALI_WGT: 1
+  AVO_WGT: 1
   STY_WGT: 4
   COL_WGT: 5

@@ -5,11 +5,14 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
+using Random = Unity.Mathematics.Random;
 
 public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
     {
         PointOctree<(float3, float3)> pointTree = null;
+        var rand = new Random();
+        rand.InitState();
         if (FlockingManager.Instance.OCTREE){
             pointTree = new PointOctree<(float3, float3)>(FlockingManager.Instance.OCT_LTH, Vector3.zero, FlockingManager.Instance.MIN_OCT_NODE);
             Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
@@ -27,7 +30,7 @@ public class MoveSystem : ComponentSystem{
             float3 avo = float3.zero;
             float3 sty = float3.zero;
             float3 col = float3.zero;
-            float3 rad = EntitySpawner.Instance.Rand.NextFloat3Direction();
+            float3 rad = rand.NextFloat3Direction();
             uint count = 0;
             uint avoCount = 0;
             // Golden spiral collision detection
