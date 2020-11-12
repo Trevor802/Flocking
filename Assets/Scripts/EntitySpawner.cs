@@ -31,12 +31,12 @@ public class EntitySpawner : MonoBehaviour
 		}
 		m_entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(m_prefab, settings);
 		CreateRandomAgents(m_count);
-		Volume.transform.localScale = Vector3.one * DEF.Instance.STY_RADIUS * 2; // radius
+		Volume.transform.localScale = Vector3.one * FlockingManager.Instance.STY_RADIUS * 2; // radius
 	}
 
 	private void CreateRandomAgents(uint count){
 		while(count-- > 0){
-			float3 position = m_rand.NextFloat3(-DEF.Instance.STY_RADIUS, DEF.Instance.STY_RADIUS);
+			float3 position = m_rand.NextFloat3(-FlockingManager.Instance.STY_RADIUS, FlockingManager.Instance.STY_RADIUS);
 			CreateEntity(position);
 		}
 	}
@@ -56,7 +56,7 @@ public class EntitySpawner : MonoBehaviour
 	}
 
 	private void OnDrawGizmos() {
-		if (Tree != null && DEF.Instance.DEBUG){
+		if (Tree != null && FlockingManager.Instance.DEBUG){
 			Tree.DrawAllBounds();
 		}
 	}

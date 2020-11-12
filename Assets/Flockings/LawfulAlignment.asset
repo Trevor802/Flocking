@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a39c1f78f01d48e7b5a7a1c90386021, type: 3}
-  m_Name: Neutral
+  m_Name: LawfulAlignment
   m_EditorClassIdentifier: 
-  VIEW_RADIUS: 10
-  VIEW_HALF_AGL: 10
-  AVO_RADIUS: 4
+  VIEW_RADIUS: 5
+  VIEW_HALF_AGL: 60
+  AVO_RADIUS: 2
   STY_RADIUS: 50
-  StayStartRatio: 0.5
-  COL_DET_RAD: 3
-  COH_WGT: 3
-  ALI_WGT: 3
-  AVO_WGT: 2
-  STY_WGT: 3
-  COL_WGT: 10
+  StayStartRatio: 0.6
+  COL_DET_RAD: 5
+  COH_WGT: 2
+  ALI_WGT: 2
+  AVO_WGT: 1
+  STY_WGT: 5
+  COL_WGT: 5

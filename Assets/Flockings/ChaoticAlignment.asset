@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a39c1f78f01d48e7b5a7a1c90386021, type: 3}
+  m_Name: ChaoticAlignment
+  m_EditorClassIdentifier: 
+  VIEW_RADIUS: 10
+  VIEW_HALF_AGL: 30
+  AVO_RADIUS: 4
+  STY_RADIUS: 50
+  StayStartRatio: 0.55
+  COL_DET_RAD: 3
+  COH_WGT: 4
+  ALI_WGT: 1
+  AVO_WGT: 3
+  STY_WGT: 3
+  COL_WGT: 10

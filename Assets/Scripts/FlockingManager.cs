@@ -1,31 +1,15 @@
 ﻿using UnityEngine;
-public class DEF : MonoBehaviour{ 
-    public static DEF Instance {get; private set;} = null;
+public class FlockingManager : MonoBehaviour{ 
+    public static FlockingManager Instance {get; private set;} = null;
     private void Awake() {
         Instance = this;
         SelectFlockingSetting(1);
     }
     [Header("Flocking Settings")]
     public bool UseSetting;
-    public FlockingSetting Chaotic;
-    public FlockingSetting Neutral;
-    public FlockingSetting Lawful;
+    public FlockingSetting[] Settings;
     public void SelectFlockingSetting(int id){
-        FlockingSetting setting = null;
-        switch(id){
-            case 0:
-                setting = Chaotic;
-                break;
-            case 1:
-                setting = Neutral;
-                break;
-            case 2:
-                setting = Lawful;
-                break;
-            default:
-                setting = Neutral;
-                break;
-        }
+        FlockingSetting setting = Settings[id];
         m_setting = setting;
     }
     private FlockingSetting m_setting;

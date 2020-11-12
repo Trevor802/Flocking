@@ -10,8 +10,8 @@ public class MoveSystem : ComponentSystem{
     protected override void OnUpdate()
     {
         PointOctree<(float3, float3)> pointTree = null;
-        if (DEF.Instance.OCTREE){
-            pointTree = new PointOctree<(float3, float3)>(DEF.Instance.OCT_LTH, Vector3.zero, DEF.Instance.MIN_OCT_NODE);
+        if (FlockingManager.Instance.OCTREE){
+            pointTree = new PointOctree<(float3, float3)>(FlockingManager.Instance.OCT_LTH, Vector3.zero, FlockingManager.Instance.MIN_OCT_NODE);
             Entities.ForEach((ref Translation trans, ref MoveDirection dir) => {
             pointTree.Add((trans.Value, dir.Value), trans.Value.ToVector3());
             EntitySpawner.Instance.Tree = pointTree;
@@ -33,14 +33,14 @@ public class MoveSystem : ComponentSystem{
             // Golden spiral collision detection
             foreach(var f in BoidHelper.G_S_Dirs){
                 float3 d = math.mul(rotation.Value, f);
-                if (DEF.Instance.DEBUG){
-                    Debug.DrawLine(pos.ToVector3(), pos.ToVector3() + d.ToVector3() * DEF.Instance.COL_DET_RAD, Color.red);
+                if (FlockingManager.Instance.DEBUG){
+                    Debug.DrawLine(pos.ToVector3(), pos.ToVector3() + d.ToVector3() * FlockingManager.Instance.COL_DET_RAD, Color.red);
                 }
                 var pWorld = World.DefaultGameObjectInjectionWorld.GetExistingSystem<BuildPhysicsWorld>();
                 var cWorld = pWorld.PhysicsWorld.CollisionWorld;
                 var raycast = new RaycastInput{
                     Start = pos,
-                    End = pos + d * DEF.Instance.COL_DET_RAD,
+                    End = pos + d * FlockingManager.Instance.COL_DET_RAD,
                     Filter = new CollisionFilter{
                         BelongsTo = ~0u,
                         CollidesWith = 1 << 8, // Only detect layer 8
@@ -56,20 +56,20 @@ public class MoveSystem : ComponentSystem{
                     break; // early quit, that's indispensable
                 }
             }
-            if (DEF.Instance.OCTREE){
-                var nodes = pointTree.GetNearby(pos.ToVector3(), DEF.Instance.VIEW_RADIUS);
+            if (FlockingManager.Instance.OCTREE){
+                var nodes = pointTree.GetNearby(pos.ToVector3(), FlockingManager.Instance.VIEW_RADIUS);
                 foreach(var n in nodes){
                     float3 dist = pos - n.Item1;
                     float distSqr = math.mul(dist, dist);
                     float halfAngle = math.acos(math.mul(dir, -dist) / math.sqrt(distSqr));
-                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && 
-                        halfAngle < DEF.Instance.VIEW_HALF_AGL_DEG * DEF.D2R){
+                    if (distSqr < FlockingManager.Instance.VIEW_RADIUS_SQR && distSqr > FlockingManager.EPS && 
+                        halfAngle < FlockingManager.Instance.VIEW_HALF_AGL_DEG * FlockingManager.D2R){
                         count++;
                         coh += n.Item1;
                         ali += n.Item2;
-                        if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
+                        if (distSqr < FlockingManager.Instance.AVO_RADIUS_SQR){
                             avoCount++;
-                            avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+                            avo += math.normalize(dist) * (FlockingManager.Instance.AVO_RADIUS_SQR - distSqr);
                         }
                     }
                 }
@@ -80,13 +80,13 @@ public class MoveSystem : ComponentSystem{
                     float3 dist = pos - t.Value;
                     float distSqr = math.mul(dist, dist);
                     float halfAngle = math.acos(math.mul(dir, dist) / math.sqrt(distSqr));
-                    if (distSqr < DEF.Instance.VIEW_RADIUS_SQR && distSqr > DEF.EPS && math.abs(halfAngle) < DEF.Instance.VIEW_HALF_AGL_DEG){
+                    if (distSqr < FlockingManager.Instance.VIEW_RADIUS_SQR && distSqr > FlockingManager.EPS && math.abs(halfAngle) < FlockingManager.Instance.VIEW_HALF_AGL_DEG){
                         count++;
                         coh += t.Value;
                         ali += d.Value;
-                        if (distSqr < DEF.Instance.AVO_RADIUS_SQR){
+                        if (distSqr < FlockingManager.Instance.AVO_RADIUS_SQR){
                             avoCount++;
-                            avo += math.normalize(dist) * (DEF.Instance.AVO_RADIUS_SQR - distSqr);
+                            avo += math.normalize(dist) * (FlockingManager.Instance.AVO_RADIUS_SQR - distSqr);
                         }
                     }
                 });
@@ -99,17 +99,17 @@ public class MoveSystem : ComponentSystem{
                 avo /= avoCount;
             }
             float rSqr = math.mul(pos, pos);
-            float p = rSqr / (DEF.Instance.STY_RADIUS * DEF.Instance.STY_RADIUS);
-            if (p > DEF.Instance.STY_SRT_RIT * DEF.Instance.STY_SRT_RIT)
-                sty = -math.normalizesafe(pos) * p * DEF.Instance.STY_WGT;
+            float p = rSqr / (FlockingManager.Instance.STY_RADIUS * FlockingManager.Instance.STY_RADIUS);
+            if (p > FlockingManager.Instance.STY_SRT_RIT * FlockingManager.Instance.STY_SRT_RIT)
+                sty = -math.normalizesafe(pos) * p * FlockingManager.Instance.STY_WGT;
             // Clamp
-            coh = coh.Clamp(DEF.Instance.COH_WGT);
-            ali = ali.Clamp(DEF.Instance.ALI_WGT);
-            avo = avo.Clamp(DEF.Instance.AVO_WGT);
-            col *= DEF.Instance.COL_WGT;
+            coh = coh.Clamp(FlockingManager.Instance.COH_WGT);
+            ali = ali.Clamp(FlockingManager.Instance.ALI_WGT);
+            avo = avo.Clamp(FlockingManager.Instance.AVO_WGT);
+            col *= FlockingManager.Instance.COL_WGT;
             // Accumulate
-            float3 all = dir * DEF.Instance.DAMP_WGT + coh + ali + avo + sty + col + rad * DEF.Instance.RandomWeight;
-            all = all.Clamp(DEF.Instance.SPD_LMT.x, DEF.Instance.SPD_LMT.y);
+            float3 all = dir * FlockingManager.Instance.DAMP_WGT + coh + ali + avo + sty + col + rad * FlockingManager.Instance.RandomWeight;
+            all = all.Clamp(FlockingManager.Instance.SPD_LMT.x, FlockingManager.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);
             // Look towards
