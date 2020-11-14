@@ -60,6 +60,7 @@ public class MoveSystem : ComponentSystem{
                 }
             }
             if (FlockingManager.Instance.OCTREE){
+                // Using octree
                 var nodes = pointTree.GetNearby(pos.ToVector3(), FlockingManager.Instance.VIEW_RADIUS);
                 foreach(var n in nodes){
                     float3 dist = pos - n.Item1;
@@ -78,7 +79,7 @@ public class MoveSystem : ComponentSystem{
                 }
             }
             else{
-            // In terms of a single agent
+                // Not using octree
                 Entities.ForEach((ref Translation t, ref MoveDirection d) => {
                     float3 dist = pos - t.Value;
                     float distSqr = math.mul(dist, dist);
@@ -111,7 +112,7 @@ public class MoveSystem : ComponentSystem{
             avo = avo.Clamp(FlockingManager.Instance.AVO_WGT);
             col *= FlockingManager.Instance.COL_WGT;
             // Accumulate
-            float3 all = dir * FlockingManager.Instance.DAMP_WGT + coh + ali + avo + sty + col + rad * FlockingManager.Instance.RandomWeight;
+            float3 all = dir * FlockingManager.Instance.DAMP_WGT + coh + ali + avo + sty + col + rad * FlockingManager.Instance.RAND_WGT;
             all = all.Clamp(FlockingManager.Instance.SPD_LMT.x, FlockingManager.Instance.SPD_LMT.y);
             // Save direction for next loop
             direction.Value = math.normalize(all);

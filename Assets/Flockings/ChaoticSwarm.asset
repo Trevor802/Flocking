@@ -16,7 +16,8 @@ MonoBehaviour:
   VIEW_HALF_AGL: 90
   AVO_RADIUS: 2
   STY_RADIUS: 50
-  StayStartRatio: 0.9
+  StayStartRatio: 0.552
+  RandomWeight: 0.5
   COL_DET_RAD: 5
   COH_WGT: 4
   ALI_WGT: 1

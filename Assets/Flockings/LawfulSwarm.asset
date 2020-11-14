@@ -17,6 +17,7 @@ MonoBehaviour:
   AVO_RADIUS: 4
   STY_RADIUS: 50
   StayStartRatio: 0.2
+  RandomWeight: 0
   COL_DET_RAD: 5
   COH_WGT: 2.64
   ALI_WGT: 1.45

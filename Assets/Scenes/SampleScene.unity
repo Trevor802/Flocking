@@ -1383,13 +1383,13 @@ MonoBehaviour:
   AlignmentWeight: 1
   AvoidanceWeight: 1
   StayWeight: 3
+  RandomWeight: 0.625
   CollisionWeight: 10
   OCT_LTH: 120
   MIN_OCT_NODE: 0.1
   DEBUG: 1
   OCTREE: 1
   SpeedLimit: {x: 13.98, y: 15.87}
-  RandomWeight: 0.625
   DampingWeight: 7.19
 --- !u!1 &1249913414
 GameObject:

@@ -11,6 +11,7 @@ public class FlockingSetting : ScriptableObject
     [Tooltip("Agent avoidance radius")] [Range(2f, 10f)] public float AVO_RADIUS = 2f;
     [Tooltip("Agent stay radius")] public float STY_RADIUS = 20f;
     [Tooltip("Agent stay start raito")] [Range(0.1f, 1f)] public float StayStartRatio = 0.9f;
+    [Tooltip("Agent random moving weight")] [Range(0f, 1f)] public float RandomWeight = 0.5f;
     [Tooltip("Agent collision detection radius")] public float COL_DET_RAD = 2f;
     [Header("Flocking Weights")]
     [Tooltip("Agent cohesion weight")] [Range(0.1f, 5f)] public float COH_WGT = 3f;

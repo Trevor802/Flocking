@@ -3,7 +3,7 @@ public class FlockingManager : MonoBehaviour{
     public static FlockingManager Instance {get; private set;} = null;
     private void Awake() {
         Instance = this;
-        SelectFlockingSetting(1);
+        SelectFlockingSetting(0);
     }
     [Header("Flocking Settings")]
     public bool UseSetting;
@@ -29,6 +29,7 @@ public class FlockingManager : MonoBehaviour{
     public float STY_WGT => UseSetting ? m_setting.STY_WGT : StayWeight;
     public float COL_WGT => UseSetting ? m_setting.COL_WGT : CollisionWeight;
     public float DAMP_WGT => DampingWeight;
+    public float RAND_WGT => UseSetting ? m_setting.RandomWeight : RandomWeight;
 
     public float STY_SRT_RIT => UseSetting ? m_setting.StayStartRatio : StayStartRatio;
 
@@ -44,6 +45,7 @@ public class FlockingManager : MonoBehaviour{
     [Tooltip("Agent alignment weight")] [Range(0.1f, 5f)] public float AlignmentWeight = 2f;
     [Tooltip("Agent avoidance weight")] [Range(0.1f, 5f)] public float AvoidanceWeight = 2f;
     [Tooltip("Agent stay weight")] [Range(0.1f, 5f)] public float StayWeight = 4f;
+    [Tooltip("Agent random moving weight")] [Range(0f, 1f)] public float RandomWeight = 0.5f;
     [Tooltip("Agent collision avoidance weight")] [Range(1f, 10f)] public float CollisionWeight = 10f;
     [Header("Octree Settings")]
     [Tooltip("Octree size")] public float OCT_LTH = 10f;
@@ -53,6 +55,5 @@ public class FlockingManager : MonoBehaviour{
     [Tooltip("if use octree to calculate agents nearby")] public bool OCTREE = false;
     [Header("Other Settings")]
     [MinMaxSlider(3, 20)] public Vector2 SpeedLimit;
-    [Range(0f, 1f)] public float RandomWeight = 0.5f;
     [Tooltip("Agent damping weight")] [Range(0.1f, 10f)] public float DampingWeight = 2f;
 }
